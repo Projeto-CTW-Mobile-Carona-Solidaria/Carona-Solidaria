@@ -1,0 +1,10 @@
+-encoding
+UTF-8
+--release
+17
+-cp
+C:/Users/guilherme_doge1/.m2/repository/com/fasterxml/jackson/core\\jackson-databind\\2.17.0\\jackson-databind-2.17.0.jar
+-d
+.tools/desktop-classes
+desktop/src/main/java/br/com/caronasolidaria/desktop\\ApiClient.java
+desktop/src/main/java/br/com/caronasolidaria/desktop\\DesktopApp.java

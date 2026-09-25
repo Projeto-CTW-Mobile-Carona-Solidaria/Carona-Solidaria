@@ -1,0 +1,381 @@
+# Projeto Final. Programação de Aplicativos Mobile
+
+## Contextualização
+
+Em ambientes empresariais e industriais, a **melhoria contínua dos processos** contribui para aumentar a eficiência, reduzir desperdícios, facilitar o acesso às informações e melhorar a execução das atividades realizadas pelos colaboradores.
+
+Nesse contexto, os **dispositivos móveis** podem apoiar a transformação de processos ao permitir que informações sejam consultadas, registradas e atualizadas diretamente no local em que as atividades acontecem.
+
+Além da mobilidade, esses dispositivos oferecem recursos próprios, como:
+
+- câmera;
+- localização;
+- notificações;
+- armazenamento local;
+- outros recursos nativos do dispositivo.
+
+Esses recursos podem ser utilizados na construção de soluções adequadas às necessidades da organização.
+
+Para que uma solução mobile seja efetiva, entretanto, **não basta apenas disponibilizar informações em uma tela menor**.
+
+É necessário:
+
+- compreender o problema que se pretende resolver;
+- definir uma proposta coerente com o contexto de utilização;
+- considerar aspectos de usabilidade;
+- realizar integração com dados;
+- considerar diferentes condições de conectividade;
+- aplicar práticas de segurança;
+- garantir confiabilidade da solução.
+
+---
+
+# 🎯 Desafio
+
+Muitas organizações adotam práticas de **Kaizen**, baseadas na melhoria contínua e na participação dos colaboradores na identificação de problemas, oportunidades e possíveis melhorias nos processos de trabalho.
+
+Considerando essa abordagem, **cada equipe deverá identificar uma oportunidade de melhoria existente ou plausível dentro de um contexto empresarial ou industrial e propor uma solução por meio de uma aplicação mobile**.
+
+> 💡 **A ideia da aplicação deverá ser definida pela própria equipe. Não será fornecido um tema específico.**
+> 
+
+A proposta deverá partir de:
+
+- um problema;
+- uma dificuldade;
+- uma necessidade;
+- ou uma oportunidade de melhoria percebida no contexto escolhido.
+
+A equipe deverá compreender o cenário, identificar os usuários envolvidos e desenvolver uma **aplicação mobile funcional** que contribua para melhorar o processo identificado.
+
+### A solução deverá apresentar coerência entre:
+
+**Problema identificado → Necessidade do usuário → Funcionalidades desenvolvidas → Tecnologias utilizadas**
+
+> ⚠️ Não será suficiente desenvolver funcionalidades isoladas apenas para atender aos requisitos técnicos. Cada recurso implementado deverá possuir uma finalidade relacionada ao problema e à solução proposta pela equipe.
+> 
+
+---
+
+## Requisitos mínimos da aplicação
+
+A aplicação deverá contemplar:
+
+- **Integração com API REST** para consulta e registro de dados;
+- **Persistência local de dados**, além da persistência remota;
+- **Funcionamento sem conexão** em pelo menos uma parte relevante da aplicação;
+- **Atualização ou sincronização de dados**, quando aplicável;
+- **Pelo menos dois recursos nativos do dispositivo**;
+- **Tratamento adequado das permissões** necessárias;
+- **Navegação entre diferentes telas**;
+- **Interface adequada ao uso em dispositivos móveis**;
+- **Tratamento de carregamento, erros e ausência de dados**;
+- **Validação das informações inseridas pelo usuário**;
+- **Boas práticas de organização do código**;
+- **Práticas de segurança**;
+- **Metodologia ágil** para organização do processo de desenvolvimento;
+- **Planejamento, execução e registro de testes**.
+
+---
+
+## 📋 Aprovação da proposta
+
+Antes do início do desenvolvimento, cada equipe deverá apresentar ao professor uma descrição resumida contendo:
+
+- problema identificado;
+- contexto em que o problema ocorre;
+- usuários envolvidos;
+- proposta de solução;
+- principais recursos previstos para a aplicação.
+
+---
+
+# ⚙️ Requisitos técnicos
+
+## 🌐 Integração com API REST
+
+Realizar operações de consulta e registro de dados, incluindo, no mínimo:
+
+- operação de **leitura**;
+- operação de **escrita**.
+
+---
+
+## 💾 Persistência local
+
+Utilizar:
+
+- AsyncStorage;
+- SQLite;
+- ou solução equivalente.
+
+O armazenamento local deverá participar de uma **funcionalidade relevante da aplicação**, não sendo utilizado apenas para configurações simples.
+
+---
+
+## 📴 Funcionamento offline
+
+Implementar pelo menos **um fluxo da aplicação que funcione sem conexão com a internet**, permitindo que o usuário:
+
+- consulte informações;
+- ou registre informações mesmo sem conexão disponível.
+
+---
+
+## 🔄 Atualização e sincronização
+
+Implementar mecanismo de atualização ou sincronização entre:
+
+**Armazenamento local ↔ Dados remotos**
+
+A sincronização deverá ser utilizada quando necessária ao fluxo definido pela equipe.
+
+---
+
+## 📲 Recursos nativos
+
+Utilizar pelo menos **dois recursos nativos do dispositivo**, relacionados diretamente à solução proposta.
+
+Exemplos:
+
+- câmera;
+- galeria;
+- geolocalização;
+- notificações;
+- biometria;
+- compartilhamento;
+- sensores;
+- recursos equivalentes.
+
+---
+
+## 🔐 Permissões
+
+Realizar o gerenciamento adequado das permissões necessárias para utilização dos recursos nativos.
+
+A aplicação deverá prever, no mínimo:
+
+- permissão concedida;
+- permissão negada.
+
+---
+
+## 🧭 Navegação
+
+Implementar navegação entre diferentes telas utilizando uma estrutura adequada ao fluxo da aplicação.
+
+---
+
+## 🎨 Interface
+
+A interface deverá ser adequada a dispositivos móveis, considerando:
+
+- responsividade;
+- organização visual;
+- legibilidade;
+- facilidade de interação.
+
+---
+
+## ⏳ Estados da aplicação
+
+Realizar o tratamento dos principais estados da aplicação:
+
+- carregamento;
+- sucesso;
+- ausência de dados;
+- erro.
+
+---
+
+## ✅ Validação de dados
+
+Validar os dados informados pelo usuário, evitando registros:
+
+- inconsistentes;
+- incompletos;
+- inválidos.
+
+---
+
+## 🧩 Organização do código
+
+Organizar o código seguindo boas práticas, realizando a separação adequada de responsabilidades, como:
+
+- componentes;
+- serviços;
+- persistência;
+- funções auxiliares;
+- outras estruturas necessárias à solução.
+
+---
+
+## 🛡️ Segurança
+
+Aplicar práticas de segurança, principalmente relacionadas a:
+
+- autenticação;
+- armazenamento de dados sensíveis;
+- permissões;
+- validação das informações.
+
+---
+
+## 📌 Metodologia ágil
+
+Utilizar uma metodologia ágil para organização do desenvolvimento.
+
+Poderão ser utilizadas abordagens como:
+
+- Kanban;
+- Scrum;
+- metodologia equivalente.
+
+---
+
+## 🧪 Testes
+
+Realizar o **planejamento, execução e registro de testes**, contemplando:
+
+- principais funcionalidades;
+- fluxos da aplicação;
+- possíveis situações de erro.
+
+---
+
+# 🚀 Entrega 1. MVP da Solução Mobile
+
+## Objetivo da entrega
+
+Desenvolver e apresentar uma **primeira versão funcional da aplicação**, demonstrando que a solução proposta é tecnicamente viável e atende ao problema empresarial ou industrial identificado pela equipe.
+
+Nesta etapa, será avaliada principalmente a capacidade da equipe de **transformar a proposta inicial em uma aplicação funcional**, utilizando adequadamente as tecnologias selecionadas e organizando o processo de desenvolvimento.
+
+---
+
+## 📦 Evidências esperadas
+
+A equipe deverá apresentar:
+
+- descrição atualizada do problema e da solução proposta;
+- protótipos ou artefatos utilizados como referência para o desenvolvimento;
+- repositório de código atualizado;
+- aplicação funcionando em dispositivo físico ou emulador;
+- navegação entre as principais telas;
+- integração funcional com API;
+- operações de leitura e escrita de dados;
+- utilização de armazenamento local;
+- pelo menos um fluxo que possa funcionar sem conexão com a internet;
+- mecanismo de atualização ou sincronização, quando necessário;
+- utilização de pelo menos dois recursos nativos do dispositivo;
+- tratamento das permissões necessárias para utilização desses recursos;
+- validação das principais entradas de dados;
+- tratamento dos principais estados da aplicação, como carregamento, erro e ausência de dados;
+- aplicação de práticas de segurança compatíveis com a solução;
+- organização adequada do código;
+- quadro de acompanhamento do desenvolvimento atualizado.
+
+---
+
+## 🎯 Capacidades avaliadas na Entrega 1
+
+### TIIN1-PRAM-C01
+
+**Utilizar os frameworks de programação e estruturação do lado do cliente de acordo com Boas Práticas de programação.**
+
+### TIIN1-PRAM-C03
+
+**Desenvolver aplicativos mobile, considerando os protótipos de interface para dispositivos móveis de acordo com artefatos.**
+
+### TIIN1-PRAM-C04
+
+**Aplicar técnicas e linguagens atuais de acordo com escopo do projeto, considerando o ambiente de Interface de Desenvolvimento - IDE, de acordo com a necessidade do software.**
+
+### TIIN1-PRAM-C09
+
+**Aplicar técnicas de segurança para o desenvolvimento de sistema.**
+
+### TIIN1-PRAM-C10
+
+**Aplicar metodologias ágeis para otimização do processo.**
+
+### TIIN1-PRAM-C14
+
+**Adotar comportamentos profissionais com iniciativa e criatividade, considerando as premissas da autogestão das suas atividades, bem como os critérios de organização, disciplina, responsabilidade, concentração e gestão do tempo.**
+
+### TIIN1-PRAM-C16
+
+**Contribuir de forma colaborativa e construtiva em pequenos e grandes grupos, por meio do diálogo nas suas atividades, visando a geração de valor individual e coletivo.**
+
+> **Total: 7 capacidades avaliadas.**
+> 
+
+---
+
+# 🧪 Entrega 2. Validação, Melhorias e Versão Final
+
+## Objetivo da entrega
+
+Validar a solução desenvolvida por meio de um **processo estruturado de testes**, identificar problemas, aplicar as correções necessárias e apresentar uma versão final mais estável e confiável da aplicação.
+
+Nesta etapa, o foco da avaliação deixa de estar apenas na implementação e passa a considerar também a capacidade da equipe de:
+
+**Planejar → Executar → Analisar → Corrigir → Validar novamente**
+
+Os testes deverão contribuir efetivamente para o aperfeiçoamento do produto desenvolvido.
+
+---
+
+## 📦 Evidências esperadas
+
+A equipe deverá apresentar:
+
+- versão final funcional da aplicação;
+- repositório atualizado;
+- plano de execução de testes;
+- identificação das funcionalidades e fluxos que serão testados;
+- definição dos tipos ou métodos de teste utilizados;
+- casos de teste contendo cenário, procedimento e resultado esperado;
+- execução dos testes planejados;
+- registro dos resultados obtidos;
+- evidências da execução;
+- registro das falhas ou inconsistências encontradas;
+- correções realizadas a partir dos resultados dos testes;
+- nova validação das funcionalidades corrigidas;
+- utilização de métodos ou ferramentas adequadas para validação da aplicação;
+- verificação das entradas de dados, autenticação e demais aspectos de segurança aplicáveis;
+- demonstração funcional da versão final.
+
+---
+
+## 🎯 Capacidades avaliadas na Entrega 2
+
+### TIIN1-PRAM-C05
+
+**Aplicar testes de sistema de acordo com as suas especificações técnicas.**
+
+### TIIN1-PRAM-C06
+
+**Elaborar o plano de execução de testes, considerando roteiro, modelo/tipo, funcionalidade e ferramenta.**
+
+### TIIN1-PRAM-C07
+
+**Aplicar os procedimentos do plano de testes em conformidade com as especificações técnicas.**
+
+### TIIN1-PRAM-C08
+
+**Aplicar diferentes métodos e frameworks de testes para validação do software e respectivas normas e procedimentos de utilização.**
+
+### TIIN1-PRAM-C11
+
+**Aplicar os Procedimentos e Normas de segurança ao processo de programação.**
+
+### TIIN1-PRAM-C12
+
+**Adotar postura crítica e argumentativa, visando compreender e aperfeiçoar as etapas e processos de trabalho sob sua responsabilidade.**
+
+### TIIN1-PRAM-C15
+
+**Demonstrar postura proativa para solucionar os problemas ou suprir as necessidades que foram apontados no processo ou produto sob sua responsabilidade.**
+
+> **Total: 7 capacidades avaliadas.**
