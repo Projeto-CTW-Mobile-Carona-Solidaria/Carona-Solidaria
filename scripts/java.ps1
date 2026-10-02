@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('test','build','backend','desktop')][string]$Action = 'test',
+    [ValidateSet('test','build','backend')][string]$Action = 'test',
     [string]$Maven = 'mvn'
 )
 $ErrorActionPreference = 'Stop'
@@ -13,11 +13,6 @@ try {
         'test' { & $Maven test }
         'build' { & $Maven package }
         'backend' { & $Maven -pl backend spring-boot:run }
-        'desktop' {
-            & $Maven -pl desktop -am package
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            & java -jar desktop/target/desktop-1.0.0.jar
-        }
     }
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } finally { Pop-Location }

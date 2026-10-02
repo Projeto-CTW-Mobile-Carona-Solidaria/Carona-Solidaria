@@ -6,7 +6,7 @@
 
 **Contexto:** deslocamento de colaboradores para unidades da WEG. Oportunidade Kaizen: reduzir o esforço de coordenação das viagens e tornar o processo de aprovação visível.
 
-**Usuários:** colaboradores passageiros e motoristas no mobile; RH e administradores no desktop.
+**Usuários:** colaboradores passageiros e motoristas no mobile; RH e administradores no painel web desktop.
 
 **Solução:** cadastro restrito por convite, perfil de dias/contato, aprovação de veículo pelo RH, busca por trajeto/dia/proximidade e grupos com capacidade controlada no servidor. Consulta offline ajuda o colaborador a rever o trajeto quando a conexão falhar. O compartilhamento nativo facilita combinar pontos de encontro.
 
@@ -17,7 +17,8 @@
 - `Documentação carona solidaria.pdf`: papéis, grupos, regras de capacidade, aprovação e parentesco; links de protótipos na página 3.
 - `link.txt`: texto completo dos critérios de Programação de Aplicativos Mobile, relido após a atualização do usuário.
 - `AGENTS.md`: consulta obrigatória à documentação versionada do Expo 57 antes de codificar.
-- Paleta inicial em `src/theme/colors.ts`: referência visual preservada.
+- `implementar.txt`: aprovação conjunta pelo motorista e RH, ocupação após as duas aprovações e solicitação para dias específicos.
+- Paleta inicial em `mobile/src/theme/colors.ts`: referência visual preservada.
 
 ## Requisitos do PDF
 
@@ -28,9 +29,10 @@
 | Caronas disponíveis e próximas | Busca por bairro/dia; GPS e raio; filtro de vagas na API |
 | Solicitar/sair, visualizar participantes | Busca, Minhas caronas e Grupo; acesso aos contatos após confirmação |
 | Veículo e formulário do motorista | Meu veículo e Oferecer; aprovação validada novamente no servidor |
-| Receber/aceitar/recusar/remover | Tela Grupo; autorização do motorista |
-| RH aprovar/reprovar com motivo | Desktop, aba Veículos; reenvio do cadastro mobile |
-| Admin cadastrar/gerenciar RH | Desktop, aba Equipe de RH; API exclusiva ADMIN |
+| Receber/aceitar/recusar/remover | Aprovação conjunta: motorista na tela Grupo e RH no painel web desktop; remoção pelo motorista |
+| Solicitar somente alguns dias | Seleção dos dias semanais oferecidos, aprovações visíveis e capacidade controlada por dia |
+| RH aprovar/reprovar com motivo | Painel web, seção Veículos; reenvio do cadastro mobile |
+| Admin cadastrar/gerenciar RH | Painel web, seção Equipe de RH; API exclusiva ADMIN |
 | Grupo com ID, veículo, motorista, dias e vagas | Domínio persistido, cartões e detalhes |
 | Parentes não contam para o programa | Declaração no pedido e indicador de elegibilidade independente dos assentos |
 
@@ -38,7 +40,7 @@
 
 | Critério | Evidência no código / entrega |
 | --- | --- |
-| API REST: leitura e escrita | `ApiController`, `services/api.ts`, cliente HTTP desktop |
+| API REST: leitura e escrita | `ApiController`, `services/api.ts`, cliente HTTP web |
 | Persistência local e remota | AsyncStorage para caronas, JPA/H2 ou PostgreSQL para domínio |
 | Fluxo offline relevante | Consulta de Minhas caronas e buscas previamente carregadas |
 | Atualização/sincronização | Read-through cache, ação Atualizar, retorno do app ao primeiro plano |
@@ -57,6 +59,6 @@
 
 - O PDF não define uma regra formal de elegibilidade para estacionamento além do parentesco. O MVP usa ao menos um passageiro não parente confirmado; não reserva uma vaga física.
 - Um colaborador mantém um veículo cadastrado; alterações exigem encerrar suas caronas ativas e passar por nova análise.
-- Cada grupo descreve um trajeto recorrente semanal. A reserva vale para os dias daquele grupo; não há bilhetes por data individual.
+- Cada grupo descreve um trajeto recorrente semanal. O passageiro escolhe um subconjunto dos dias oferecidos; não há bilhetes por data individual.
 - Homologação do vínculo com a empresa é responsabilidade do RH nesta versão; integração com SSO não foi implementada.
 - Aprovação do professor e evidências de uso em dispositivo precisam ser obtidas pela equipe; não são presumidas a partir do código.

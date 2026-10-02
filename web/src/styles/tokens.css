@@ -1,0 +1,55 @@
+/* Same corporate palette and scale as mobile/src/theme/tokens.ts.
+   Layout breakpoints: mobile <768px; tablet 768–1024px; desktop >1024px. */
+.web-desktop {
+  --color-primary: #01296f;
+  --color-primary-hover: #084c93;
+  --color-background: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-border: #d6dee8;
+  --color-control-border: #7d8da0;
+  --color-text: #213549;
+  --color-text-muted: #526477;
+  --color-text-subtle: #617183;
+  --color-selected: #edf2f8;
+  --color-focus: #2765a7;
+  --color-success: #166754;
+  --color-success-bg: #e8f3ed;
+  --color-warning: #78531b;
+  --color-warning-bg: #faf1de;
+  --color-danger: #a12c38;
+  --color-danger-bg: #fbedec;
+  --color-nav-selected: #1b417c;
+  --color-nav-text: #c9d8ed;
+  --color-nav-line: #476390;
+  --color-backdrop: #142a4680;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-sm: 4px;
+  --radius-control: 6px;
+  --radius-card: 8px;
+  --radius-modal: 8px;
+  --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-page: 30px;
+  --font-section: 18px;
+  --font-body: 14px;
+  --font-label: 13px;
+  --font-helper: 12px;
+  --font-caption: 11px;
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-title: 700;
+  --control-height: 38px;
+  --control-small: 36px;
+  --border-width: 1px;
+  --sidebar-width: 224px;
+  --content-width: 1480px;
+  --form-width: 640px;
+  --shadow-dialog: 0 4px 16px #142a4614;
+  --duration: 140ms;
+}

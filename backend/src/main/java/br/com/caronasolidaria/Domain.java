@@ -64,6 +64,11 @@ public final class Domain {
         @ManyToOne(optional = false) public Member passenger;
         @Enumerated(EnumType.STRING) public RequestStatus status = RequestStatus.PENDING;
         public boolean relative;
+        // Null approvals and empty days identify records created before joint approval.
+        public Boolean driverApproved = false;
+        public Boolean rhApproved = false;
+        @ElementCollection(fetch = FetchType.EAGER) @Enumerated(EnumType.STRING)
+        public Set<DayOfWeek> days = new HashSet<>();
         public Instant updatedAt = Instant.now();
     }
     @Entity(name = "Session") @Table(name = "sessions")

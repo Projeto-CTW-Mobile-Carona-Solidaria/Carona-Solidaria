@@ -34,10 +34,12 @@ public final class Dtos {
         @DecimalMin("-180") @DecimalMax("180") Double longitude) {}
     public record RideView(Long id, Long driverId, String driverName, String model, String color,
         String origin, String destination, String departureTime, int capacity, long availableSeats,
-        Set<DayOfWeek> days, boolean active, Double distanceKm, boolean specialParkingEligible) {}
-    public record Join(boolean relative) {}
+        Set<DayOfWeek> days, boolean active, Double distanceKm, boolean specialParkingEligible,
+        java.util.Map<DayOfWeek, Long> availableSeatsByDay) {}
+    public record Join(boolean relative, @NotNull @Size(min=1,max=7) Set<@NotNull DayOfWeek> days) {}
     public record Decision(boolean accepted) {}
     public record ParticipationView(Long id, Long rideId, Long passengerId, String passengerName,
-        String whatsapp, RequestStatus status, boolean relative) {}
+        String whatsapp, RequestStatus status, boolean relative, Set<DayOfWeek> days,
+        boolean driverApproved, boolean rhApproved) {}
     public record Group(RideView ride, String driverWhatsapp, String plate, java.util.List<ParticipationView> participants) {}
 }

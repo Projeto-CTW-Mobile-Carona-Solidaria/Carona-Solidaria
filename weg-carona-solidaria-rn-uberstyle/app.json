@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "WEG Carona Solidária",
+    "slug": "weg-carona-solidaria",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#F4F7FA",
+    "primaryColor": "#005596",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.wegcaronasolidaria",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "A Carona Solidária usa sua localização para transmitir a posição do motorista durante a viagem."
+      }
+    },
+    "android": {
+      "package": "com.example.wegcaronasolidaria",
+      "adaptiveIcon": {
+        "backgroundColor": "#005596"
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir que a Carona Solidária use sua localização para transmitir a viagem."
+        }
+      ],
+      "expo-system-ui"
+    ]
+  }
+}

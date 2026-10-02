@@ -119,7 +119,8 @@ class CaronaService {
         return rides.findAll().stream().filter(r -> r.active && r.driver.active && r.vehicle.status==VehicleStatus.APPROVED && !r.driver.id.equals(actor))
             .filter(r -> day==null || r.days.contains(day)).filter(r -> (r.origin+" "+r.destination).toLowerCase(Locale.ROOT).contains(q))
             .filter(r -> participations.findByRideIdAndPassengerId(r.id,actor).map(p -> p.status!=RequestStatus.PENDING && p.status!=RequestStatus.ACCEPTED).orElse(true))
-            .map(r -> rideView(r,lat,lon)).filter(r -> r.availableSeats()>0)
+            .map(r -> rideView(r,lat,lon))
+            .filter(r -> day==null ? r.availableSeatsByDay().values().stream().anyMatch(seats -> seats>0) : r.availableSeatsByDay().getOrDefault(day,0L)>0)
             .filter(r -> radius==null || (r.distanceKm()!=null && r.distanceKm()<=radius))
             .sorted(Comparator.comparing(RideView::distanceKm,Comparator.nullsLast(Double::compareTo)).thenComparing(RideView::id)).toList();
     }
@@ -127,14 +128,28 @@ class CaronaService {
         collaborator(actor); Set<Long> ids=new HashSet<>(); participations.findByPassengerId(actor).forEach(p -> ids.add(p.ride.id));
         return rides.findAll().stream().filter(r -> r.driver.id.equals(actor)||ids.contains(r.id)).map(r -> rideView(r,null,null)).toList();
     }
-    private long occupied(Long id) { return participations.countByRideIdAndStatus(id,RequestStatus.ACCEPTED); }
+    private Set<DayOfWeek> participationDays(Participation p) {
+        // Existing requests covered the entire recurring ride.
+        return p.days.isEmpty()?Set.copyOf(p.ride.days):Set.copyOf(p.days);
+    }
+    private Map<DayOfWeek,Long> availableSeatsByDay(Ride r) {
+        Map<DayOfWeek,Long> seats=new EnumMap<>(DayOfWeek.class);
+        r.days.forEach(day -> seats.put(day,(long)r.capacity));
+        participations.findByRideId(r.id).stream().filter(p -> p.status==RequestStatus.ACCEPTED)
+            .forEach(p -> participationDays(p).forEach(day -> seats.computeIfPresent(day,(key,count) -> Math.max(0,count-1))));
+        return seats;
+    }
+    private void requireSeats(Ride r,Set<DayOfWeek> days) {
+        Map<DayOfWeek,Long> seats=availableSeatsByDay(r);
+        if (days.stream().anyMatch(day -> seats.getOrDefault(day,0L)<=0)) throw conflict("Não há vagas em todos os dias solicitados. Atualize a carona.");
+    }
     private RideView rideView(Ride r,Double lat,Double lon) {
-        long count=occupied(r.id);
+        Map<DayOfWeek,Long> seats=availableSeatsByDay(r);
         boolean eligible=r.active && r.driver.active && r.vehicle.status==VehicleStatus.APPROVED && participations.findByRideId(r.id).stream()
             .anyMatch(p -> p.status==RequestStatus.ACCEPTED && !p.relative && p.passenger.active);
         Double km=lat==null||r.latitude==null?null:distance(lat,lon,r.latitude,r.longitude);
         return new RideView(r.id,r.driver.id,r.driver.name,r.vehicle.model,r.vehicle.color,r.origin,r.destination,r.departureTime,r.capacity,
-            Math.max(0,r.capacity-count),Set.copyOf(r.days),r.active,km,eligible);
+            seats.values().stream().mapToLong(Long::longValue).min().orElse(0),Set.copyOf(r.days),r.active,km,eligible,seats);
     }
     static double distance(double lat1,double lon1,double lat2,double lon2) {
         double a=Math.pow(Math.sin(Math.toRadians(lat2-lat1)/2),2)+Math.cos(Math.toRadians(lat1))*Math.cos(Math.toRadians(lat2))*Math.pow(Math.sin(Math.toRadians(lon2-lon1)/2),2);
@@ -148,29 +163,49 @@ class CaronaService {
         return new Group(rideView(r,null,null),r.driver.whatsapp,r.vehicle.plate,participations.findByRideId(rideId).stream()
             .filter(p -> privileged || p.status==RequestStatus.ACCEPTED).map(this::participationView).toList());
     }
+    Group journeyGroup(Long actor,Long rideId) {
+        Group group=group(actor,rideId);
+        requireOpen(rides.findById(rideId).orElseThrow(ApiException::missing));
+        return group;
+    }
     List<ParticipationView> requests(Long actor) {
         collaborator(actor);
         // Offline request history has no contact details. Group contacts are fetched online.
-        return participations.findByPassengerId(actor).stream().map(p -> new ParticipationView(p.id,p.ride.id,p.passenger.id,p.passenger.name,"",p.status,p.relative)).toList();
+        return participations.findByPassengerId(actor).stream().map(p -> participationView(p,false)).toList();
     }
     ParticipationView join(Long actor,Long rideId,Join input) {
         Member passenger=collaborator(actor); Ride r=rides.lock(rideId).orElseThrow(ApiException::missing);
         if (passenger.whatsapp.isBlank()) throw bad("Complete seu perfil e WhatsApp antes de solicitar carona.");
         if (r.driver.id.equals(actor)) throw bad("Você já é o motorista desta carona.");
-        requireOpen(r); if (occupied(rideId)>=r.capacity) throw conflict("Esta carona não tem mais vagas.");
+        requireOpen(r);
+        if (input.days()==null || input.days().isEmpty() || input.days().stream().anyMatch(Objects::isNull) || !r.days.containsAll(input.days())) throw bad("Selecione ao menos um dia oferecido nesta carona.");
+        requireSeats(r,input.days());
         Participation p=participations.findByRideIdAndPassengerId(rideId,actor).orElseGet(Participation::new);
         if (p.id!=null && (p.status==RequestStatus.PENDING||p.status==RequestStatus.ACCEPTED)) throw conflict("Você já participa ou possui uma solicitação pendente.");
         p.ride=r; p.passenger=passenger; p.relative=input.relative(); p.status=RequestStatus.PENDING; p.updatedAt=Instant.now();
+        p.days=new HashSet<>(input.days()); p.driverApproved=false; p.rhApproved=false;
         return participationView(participations.save(p));
     }
     ParticipationView decide(Long actor,Long rideId,Long requestId,Decision input) {
-        collaborator(actor); Ride r=rides.lock(rideId).orElseThrow(ApiException::missing); owner(actor,r); requireOpen(r);
+        Member reviewer=member(actor); Ride r=rides.lock(rideId).orElseThrow(ApiException::missing);
+        boolean driverDecision=r.driver.id.equals(actor);
+        if (!driverDecision && reviewer.role==Role.MEMBER) throw forbidden();
+        requireOpen(r);
         Participation p=participations.findById(requestId).orElseThrow(ApiException::missing);
         if (!p.ride.id.equals(rideId)) throw missing();
         if (p.status!=RequestStatus.PENDING) throw conflict("Esta solicitação já foi respondida.");
         if (!p.passenger.active) throw bad("O colaborador está desativado.");
-        if (input.accepted() && occupied(rideId)>=r.capacity) throw conflict("Não há vagas disponíveis.");
-        p.status=input.accepted()?RequestStatus.ACCEPTED:RequestStatus.REJECTED; p.updatedAt=Instant.now(); return participationView(p);
+        if (input.accepted()) {
+            if (Boolean.TRUE.equals(driverDecision?p.driverApproved:p.rhApproved)) throw conflict("Sua aprovação já foi registrada. Aguarde a outra aprovação.");
+            boolean bothApproved=driverDecision?Boolean.TRUE.equals(p.rhApproved):Boolean.TRUE.equals(p.driverApproved);
+            if (bothApproved) requireSeats(r,participationDays(p));
+            if (driverDecision) p.driverApproved=true; else p.rhApproved=true;
+            if (bothApproved) p.status=RequestStatus.ACCEPTED;
+        } else {
+            if (driverDecision) p.driverApproved=false; else p.rhApproved=false;
+            p.status=RequestStatus.REJECTED;
+        }
+        p.updatedAt=Instant.now(); return participationView(p);
     }
     void leave(Long actor,Long rideId) {
         collaborator(actor); rides.lock(rideId).orElseThrow(ApiException::missing);
@@ -196,5 +231,9 @@ class CaronaService {
     List<RideView> groups(Long actor) { staff(actor); return rides.findAll().stream().map(r -> rideView(r,null,null)).toList(); }
     private void owner(Long actor,Ride r) { if (!r.driver.id.equals(actor)) throw forbidden(); }
     private void requireOpen(Ride r) { if (!r.active || !r.driver.active || r.vehicle.status!=VehicleStatus.APPROVED) throw conflict("Esta carona não está disponível."); }
-    private ParticipationView participationView(Participation p) { return new ParticipationView(p.id,p.ride.id,p.passenger.id,p.passenger.name,p.passenger.whatsapp,p.status,p.relative); }
+    private ParticipationView participationView(Participation p) { return participationView(p,true); }
+    private ParticipationView participationView(Participation p,boolean contacts) {
+        return new ParticipationView(p.id,p.ride.id,p.passenger.id,p.passenger.name,contacts?p.passenger.whatsapp:"",p.status,p.relative,
+            participationDays(p),Boolean.TRUE.equals(p.driverApproved),Boolean.TRUE.equals(p.rhApproved));
+    }
 }

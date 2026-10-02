@@ -39,12 +39,14 @@ yarn-error.*
 example
 
 # generated native folders
-/ios
-/android
+**/ios/
+**/android/
 
 # Java / local tools / private configuration
 **/target/
 **/data/
+**/data-from-root/
 .tools/
+.vitest/
 .env
 *.log
