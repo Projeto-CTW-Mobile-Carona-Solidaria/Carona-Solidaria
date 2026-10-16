@@ -4,7 +4,7 @@
     "scheme": "caronasolidaria", "userInterfaceStyle": "light",
     "ios": { "bundleIdentifier": "br.com.caronasolidaria.app" },
     "android": { "package": "br.com.caronasolidaria.app" },
-    "web": { "output": "static" },
+    "web": { "output": "single" },
     "plugins": ["expo-router", "expo-secure-store", ["expo-location", {"locationWhenInUsePermission": "Permitir que Carona Solidária encontre caronas próximas ao seu ponto de saída?", "isIosBackgroundLocationEnabled": false, "isAndroidBackgroundLocationEnabled": false}], ["expo-splash-screen", {"backgroundColor": "#01296F"}]],
     "experiments": { "typedRoutes": true, "reactCompiler": true }
   }

@@ -5,6 +5,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import org.springframework.context.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -36,7 +37,10 @@ class SecurityConfig {
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/health").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/rh/**").hasAnyRole("RH", "ADMIN")
-                .requestMatchers("/api/**").authenticated().anyRequest().denyAll())
+                .requestMatchers("/api/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/", "/index.html", "/login", "/register", "/mine", "/offer", "/vehicle", "/profile",
+                    "/group/*", "/journey/*", "/admin", "/admin/**", "/_expo/**", "/assets/**", "/favicon.ico").permitAll()
+                .anyRequest().denyAll())
             .exceptionHandling(e -> e.authenticationEntryPoint((req, res, ex) -> error(res, 401, "Sua sessão expirou. Entre novamente."))
                 .accessDeniedHandler((req, res, ex) -> error(res, 403, "Você não tem permissão para esta operação.")))
             .addFilterBefore(new OncePerRequestFilter() {

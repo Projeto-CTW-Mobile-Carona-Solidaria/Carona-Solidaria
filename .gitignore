@@ -49,4 +49,7 @@ example
 .tools/
 .vitest/
 .env
+.env.*
+!.env.example
+.npm-cache/
 *.log
