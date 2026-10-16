@@ -1,5 +1,8 @@
 import { Platform } from 'react-native';
-export const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? (Platform.OS === 'android' ? 'http://10.0.2.2:8079' : 'http://localhost:8079')).replace(/\/$/, '');
+const defaultApiUrl = Platform.OS === 'web' && !__DEV__ && typeof window !== 'undefined'
+  ? window.location.origin
+  : Platform.OS === 'android' ? 'http://10.0.2.2:8079' : 'http://localhost:8079';
+export const API_URL = (process.env.EXPO_PUBLIC_API_URL?.trim() || defaultApiUrl).replace(/\/$/, '');
 let token: string | null = null;
 let unauthorized: (() => void) | undefined;
 export function configureSession(value: string | null, callback?: () => void) { token = value; unauthorized = callback; }

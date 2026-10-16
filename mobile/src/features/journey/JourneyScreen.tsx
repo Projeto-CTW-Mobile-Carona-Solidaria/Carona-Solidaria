@@ -16,7 +16,7 @@ import { journeyThemes, type JourneyTheme } from './theme';
 
 export default function JourneyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>(), { user } = useAuth();
-  const systemDark = useColorScheme() === 'dark', [dark, setDark] = useState(systemDark), theme = journeyThemes[dark ? 'dark' : 'light'];
+  const systemLight = useColorScheme() === 'light', [dark, setDark] = useState(systemLight), theme = journeyThemes[dark ? 'dark' : 'light'];
   const [group, setGroup] = useState<Group | null>(null), [loading, setLoading] = useState(true), [loadError, setLoadError] = useState('');
   const [day, setDay] = useState<Day>('MONDAY'), [origin, setOrigin] = useState(''), [destination, setDestination] = useState('');
   const [pickups, setPickups] = useState<Record<number, string>>({}), [included, setIncluded] = useState<number[]>([]);

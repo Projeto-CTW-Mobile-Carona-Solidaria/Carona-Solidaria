@@ -12,6 +12,10 @@ docs/         Requisitos, contrato da API e registro de validação
 
 O painel web substitui o cliente Java Swing. Não é necessário instalar um aplicativo desktop nem executar um JAR de interface. Mobile e web possuem dependências independentes, com seus próprios `package.json`, `package-lock.json` e `node_modules`.
 
+## Deploy com URL fixa
+
+A configuração de [deploy gratuito](docs/DEPLOY.md) usa Render Free e PostgreSQL Neon Free. O `Dockerfile` publica o app Expo web em `/`, o painel em `/admin/` e a API em `/api`, no mesmo domínio HTTPS. A publicação requer contas conectadas e as credenciais reais do banco. Os planos gratuitos têm limites e suspensão por inatividade.
+
 ## Backend
 
 Requisitos: JDK 17+ e Maven 3.6.3+. Na raiz do repositório:
@@ -21,6 +25,8 @@ mvn -pl backend spring-boot:run
 ```
 
 A API atende em `http://localhost:8079`; `GET /api/health` informa sua disponibilidade. O banco de desenvolvimento fica em `backend/data/` quando iniciado pelo comando acima. `ADMIN_EMAIL` e `ADMIN_PASSWORD` configuram o administrador inicial; não alteram uma conta existente. Defina essas variáveis antes de iniciar uma nova base.
+
+O backend carrega a `.env` da raiz automaticamente quando iniciado da raiz ou de `backend/`; copie `.env.example` e preencha suas credenciais. Use `CHAVE=valor` sem aspas. Variáveis do sistema têm prioridade. As `.env` não entram no Git nem na imagem Docker.
 
 Configuração opcional: `PORT`, `DATABASE_URL` (URL JDBC), `DATABASE_USER`, `DATABASE_PASSWORD` e `CORS_ORIGINS` (origens separadas por vírgula). O desenvolvimento usa H2 em arquivo; PostgreSQL pode ser configurado. O Hibernate atualiza o esquema automaticamente nesta versão.
 
