@@ -17,3 +17,5 @@
 **/*.pem
 **/*.key
 **/*.jks
+**/logs
+observability/.secrets

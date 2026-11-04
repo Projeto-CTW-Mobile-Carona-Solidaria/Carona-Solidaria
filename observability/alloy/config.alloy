@@ -1,0 +1,42 @@
+logging {
+  level = "info"
+}
+
+local.file_match "backend" {
+  path_targets = [{
+    "__path__" = "/var/log/carona/application.json",
+    "application" = "carona-solidaria",
+    "job" = "carona-backend",
+    "environment" = "local",
+  }]
+  sync_period = "5s"
+}
+
+loki.source.file "backend" {
+  targets = local.file_match.backend.targets
+  forward_to = [loki.process.backend.receiver]
+}
+
+loki.process "backend" {
+  stage.json {
+    expressions = {
+      level = "log.level",
+      timestamp = "\"@timestamp\"",
+    }
+  }
+  stage.timestamp {
+    source = "timestamp"
+    format = "RFC3339Nano"
+  }
+  stage.labels {
+    values = { level = "" }
+  }
+  // Request IDs, URLs and user data must never become indexed labels.
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

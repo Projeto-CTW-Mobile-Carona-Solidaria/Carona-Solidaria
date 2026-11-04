@@ -1,6 +1,16 @@
 # Registro de validação
 
-Atualizado em 02/10/2026.
+## Observabilidade — 04/11/2026
+
+- Backend: 30 testes aprovados, incluindo cinco novos testes de token de coleta, isolamento da API, bloqueio dos demais endpoints do Actuator e privacidade dos logs de requisição.
+- Build do JAR concluído após os testes.
+- Configurações verificadas pelas ferramentas nativas: `promtool check config`, Loki `-verify-config=true` e `alloy validate`.
+- Smoke com API temporária em H2 em memória e a stack Docker local: coleta real com `up=1`, ingestão de um log de requisição no Loki, dois dashboards provisionados, 18 painéis e 24 consultas executadas com sucesso. A API temporária foi encerrada após o teste.
+- Grafana validado na porta 3300; a porta 3000 não permitiu bind neste computador. O teste não usou o banco persistente nem serviços de produção.
+
+O script `python scripts/verify-observability.py` repete a validação de coleta, ingestão e consultas com a API e os serviços ativos. A verificação por API não substitui uma revisão visual dos dashboards no navegador.
+
+## Validações anteriores — 02/10/2026
 
 ## Verificações executadas
 

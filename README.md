@@ -32,6 +32,22 @@ Configuração opcional: `PORT`, `DATABASE_URL` (URL JDBC), `DATABASE_USER`, `DA
 
 O banco anteriormente localizado em `data/` na raiz foi preservado em `backend/data-from-root/`, sem substituir `backend/data/`. Para usar aquela base, configure explicitamente sua URL JDBC. Arquivos gerados do Swing foram preservados em `.tools/legacy-desktop/`, fora do código ativo.
 
+## Grafana, Prometheus e logs
+
+A configuração de [observabilidade](docs/OBSERVABILIDADE.md) inclui dois dashboards provisionados: **API e JVM** (HTTP, latência, erros, CPU, memória e banco) e **Logs** (nível, mensagem e identificador da requisição). Prometheus coleta métricas; Alloy envia os logs JSON ao Loki, consultado pelo Grafana.
+
+Com Docker Desktop em execução e a `.env` do backend configurada, abra dois terminais na raiz:
+
+```powershell
+# Terminal 1: inicia Grafana, Prometheus, Loki e Alloy.
+./scripts/observability.ps1 -Action up
+
+# Terminal 2: inicia a API com o token de coleta e os logs estruturados.
+./scripts/observability.ps1 -Action backend
+```
+
+Abra `http://localhost:3300`, usuário `admin`. A senha gerada fica em `observability/.secrets/grafana-admin-password`, fora do Git. O Prometheus atende em `http://localhost:9090`. Os serviços de observabilidade são locais; o deploy existente no Render não é alterado por esses comandos.
+
 ## Painel web desktop
 
 Requisito: Node 24 LTS. Em outro terminal:

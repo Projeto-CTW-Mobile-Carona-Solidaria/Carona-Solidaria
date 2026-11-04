@@ -1,0 +1,11 @@
+apiVersion: 1
+providers:
+  - name: Carona Solidaria
+    orgId: 1
+    folder: Carona Solidária
+    type: file
+    disableDeletion: true
+    editable: false
+    updateIntervalSeconds: 15
+    options:
+      path: /var/lib/grafana/dashboards

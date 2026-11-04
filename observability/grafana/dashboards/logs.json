@@ -1,0 +1,365 @@
+{
+  "uid": "carona-logs",
+  "title": "Carona Solidária · Logs",
+  "description": "Logs ECS enviados por Alloy ao Loki. Filtre por nível, texto e requestId (retornado no cabeçalho X-Request-ID da API). Os filtros de texto aceitam regex RE2.",
+  "tags": [
+    "carona-solidaria",
+    "observability"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "editable": false,
+  "links": [
+    {
+      "title": "API e JVM",
+      "type": "link",
+      "url": "/d/carona-api",
+      "keepTime": true
+    },
+    {
+      "title": "Logs",
+      "type": "link",
+      "url": "/d/carona-logs",
+      "keepTime": true
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "level",
+        "label": "Nível",
+        "type": "custom",
+        "query": "TRACE,DEBUG,INFO,WARN,ERROR",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "search",
+        "label": "Mensagem (regex)",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        }
+      },
+      {
+        "name": "request_id",
+        "label": "Request ID (regex)",
+        "type": "textbox",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Eventos no período",
+      "description": "Sem dados significa que não chegaram eventos com os filtros atuais.",
+      "type": "stat",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Avisos no período",
+      "description": "",
+      "type": "stat",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\" | level=\"WARN\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Erros no período",
+      "description": "",
+      "type": "stat",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\" | level=\"ERROR\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Volume por nível",
+      "description": "",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (level) (rate({job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\" [$__auto]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "{{level}}",
+          "queryType": "range"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Logs da aplicação",
+      "description": "Expanda um evento para ver mensagem, rota, status HTTP, duração e requestId. A rota usa o template do controlador, sem IDs pessoais.",
+      "type": "logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 24,
+        "h": 13
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\"",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "",
+          "queryType": "range"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Somente avisos e erros",
+      "description": "",
+      "type": "logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "carona-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"carona-backend\",application=\"carona-solidaria\",environment=\"local\",level=~\"${level:regex}\"} |~ ${search:doublequote} | json | requestId =~ ${request_id:doublequote} | __error__=\"\" | level=~\"WARN|ERROR\"",
+          "datasource": {
+            "type": "loki",
+            "uid": "carona-loki"
+          },
+          "legendFormat": "",
+          "queryType": "range"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none"
+      }
+    }
+  ]
+}

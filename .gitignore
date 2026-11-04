@@ -53,3 +53,5 @@ example
 !.env.example
 .npm-cache/
 *.log
+**/logs/
+observability/.secrets/
