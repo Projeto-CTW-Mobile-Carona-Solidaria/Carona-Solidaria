@@ -8,6 +8,7 @@ export default function WebLogin() {
   const { login }=useAuth();
   useEffect(()=>{document.title='Entrar | Carona Solidária';},[]);
   const [busy,setBusy]=useState(false),[error,setError]=useState('');
+  const [passwordVisible,setPasswordVisible]=useState(false);
   async function submit(event:FormEvent<HTMLFormElement>) {
     event.preventDefault(); if(busy)return;
     const data=new FormData(event.currentTarget);setBusy(true);setError('');
@@ -24,7 +25,12 @@ export default function WebLogin() {
       <h1 id="login-title">Entre na sua conta</h1><p>Entre com sua conta de RH ou administrador para gerenciar o programa.</p>
       <form onSubmit={event=>{void submit(event);}}><fieldset disabled={busy}>
         <label>E-mail<input name="email" type="email" autoComplete="username" required placeholder="voce@empresa.com"/></label>
-        <label>Senha<input name="password" type="password" autoComplete="current-password" required maxLength={72}/></label>
+        <div className="wd-password">
+          <label>Senha<input name="password" type={passwordVisible?'text':'password'} autoComplete="current-password" required maxLength={72}/></label>
+          <button className="wd-button" type="button" onClick={()=>setPasswordVisible(visible=>!visible)}>
+            {passwordVisible?'Ocultar senha':'Mostrar senha'}
+          </button>
+        </div>
         {error&&<p className="wd-alert wd-error" role="alert">{error}</p>}
         <button className="wd-button wd-primary" type="submit">{busy?'Entrando…':'Entrar'}</button>
       </fieldset></form>

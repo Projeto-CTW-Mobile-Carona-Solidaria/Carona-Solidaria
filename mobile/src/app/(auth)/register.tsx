@@ -14,8 +14,8 @@ export default function Register() {
   return <Screen safeTop title="Seu primeiro acesso" subtitle="Use os dados e o código entregues pelo RH após a confirmação do seu vínculo."><View style={s.form}><Section title="Dados do convite">
     <Field label="E-mail cadastrado pelo RH" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"/>
     <Field label="Matrícula" value={employeeId} onChangeText={setEmployeeId}/><Field label="Código do convite" value={invitationCode} onChangeText={setCode} autoCapitalize="none" autoCorrect={false}/></Section><Section title="Senha de acesso"><FormRow>
-    <Field label="Senha (mínimo 10 caracteres)" value={password} onChangeText={setPassword} secureTextEntry autoComplete="new-password"/>
-    <Field label="Confirmar senha" value={confirm} onChangeText={setConfirm} secureTextEntry/></FormRow></Section><Notice text={error} error/>
+    <Field label="Senha (mínimo 10 caracteres)" value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete="new-password"/>
+    <Field label="Confirmar senha" value={confirm} onChangeText={setConfirm} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete="new-password"/></FormRow></Section><Notice text={error} error/>
     <Button title={busy?'Ativando…':'Ativar cadastro'} disabled={busy} onPress={()=>{void submit();}}/><Link href="/(auth)/login" style={s.link}>Voltar para entrar</Link>
   </View></Screen>;
 }

@@ -83,12 +83,11 @@ npm ci
 npm start
 ```
 
-Copie `mobile/.env.example` para `mobile/.env` e ajuste `EXPO_PUBLIC_API_URL` quando necessário:
+Copie `mobile/.env.example` para `mobile/.env`. Em desenvolvimento, deixe `EXPO_PUBLIC_API_URL` em branco para usar a API na porta 8079 do computador que executa o Expo. No emulador Android, o app usa `10.0.2.2`. No simulador iOS, usa `localhost`.
 
-- Emulador Android: `http://10.0.2.2:8079`.
-- Dispositivo físico: IP local do computador, por exemplo `http://192.168.1.10:8079`; ambos na mesma rede.
-- Preview web dos colaboradores: `http://localhost:8079`, com `npm run web` dentro de `mobile/`.
-- Produção: URL HTTPS. Variáveis `EXPO_PUBLIC_*` são públicas; nunca coloque segredos nelas.
+No celular ou tablet físico, conecte o aparelho à mesma rede do computador. Se usar um túnel do Expo ou uma API em outro computador, informe uma URL acessível pelo aparelho, por exemplo `http://192.168.1.10:8079`. No preview web acessado pelo IP da rede, inclua a origem do preview em `CORS_ORIGINS`. Reinicie o Expo após alterar o `.env`.
+
+Builds nativos de produção exigem uma URL HTTPS em `EXPO_PUBLIC_API_URL`. O build web servido pelo backend usa a mesma origem por padrão. Variáveis `EXPO_PUBLIC_*` são públicas.
 
 O colaborador ativa o convite no app, define sua senha e completa perfil/WhatsApp. Pode buscar ou oferecer caronas, cadastrar o veículo e acompanhar solicitações. RH e ADMIN usam o painel em `web/`.
 

@@ -7,7 +7,7 @@ import { DAYS, dayLabels, type Day } from '../types';
 const {colors,space,radius,type,control}=tokens;
 export function Screen({children,title,subtitle,safeTop=false}:{children:ReactNode;title:string;subtitle?:string;safeTop?:boolean}) {
   const wide=useWindowDimensions().width>=tokens.breakpoints.tablet;
-  return <SafeAreaView style={s.safe} edges={safeTop?['top','left','right','bottom']:['left','right','bottom']}><KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==='ios'?'padding':undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
+  return <SafeAreaView style={s.safe} edges={safeTop?['top','left','right','bottom']:['left','right','bottom']}><KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==='ios'?'padding':undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[s.content,wide&&s.wideContent]}>
     <View style={s.pageHeader}><Text style={s.eyebrow}>CARONA SOLIDÁRIA</Text><Text accessibilityRole="header" style={[s.title,wide&&{fontSize:type.desktopTitle}]}>{title}</Text>{subtitle&&<Text style={s.muted}>{subtitle}</Text>}</View>{children}
   </ScrollView></KeyboardAvoidingView></SafeAreaView>;
 }
@@ -19,15 +19,35 @@ export function FormRow({children}:{children:ReactNode}) {
   const wide=useWindowDimensions().width>=tokens.breakpoints.tablet;
   return <View style={[s.formRow,wide&&{flexDirection:'row'}]}>{Children.map(children,child=><View style={wide?{flex:1}:undefined}>{child}</View>)}</View>;
 }
+export function CardGrid({children}:{children:ReactNode}) {
+  const wide=useWindowDimensions().width>=tokens.breakpoints.tablet;
+  return <View style={[s.cardGrid,wide&&s.wideGrid]}>
+    {Children.map(children,child=><View style={wide&&s.gridColumn}>{child}</View>)}
+  </View>;
+}
 export function Button({title,onPress,disabled=false,secondary=false,variant,icon}:{title:string;onPress:()=>void;disabled?:boolean;secondary?:boolean;variant?:'primary'|'secondary'|'tertiary'|'danger';icon?:IconName}) {
   const [focused,setFocused]=useState(false);const wide=useWindowDimensions().width>=tokens.breakpoints.tablet;
   const kind=variant??(secondary?'secondary':'primary');const textColor=kind==='primary'?colors.white:kind==='danger'?colors.danger:colors.navy;
   return <Pressable accessibilityRole="button" accessibilityState={{disabled}} disabled={disabled} onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} style={({pressed})=>[s.button,wide&&{minHeight:control.desktopButton,alignSelf:'flex-start'},kind!=='primary'&&s.secondary,kind==='tertiary'&&s.tertiary,kind==='danger'&&s.dangerButton,focused&&s.focused,(disabled||pressed)&&{opacity:0.6}]}>{icon&&<Icon name={icon} color={textColor}/>}<Text style={[s.buttonText,{color:textColor}]}>{title}</Text></Pressable>;
 }
-export function Field({label,...props}:TextInputProps&{label:string}) {
+export function Field({label,secureTextEntry,...props}:TextInputProps&{label:string}) {
   const [focused,setFocused]=useState(false);
-  const wide=useWindowDimensions().width>=tokens.breakpoints.tablet;
-  return <View style={s.field}><Text style={s.label}>{label}</Text><TextInput accessibilityLabel={label} placeholderTextColor={colors.textSubtle} {...props} onFocus={event=>{setFocused(true);props.onFocus?.(event);}} onBlur={event=>{setFocused(false);props.onBlur?.(event);}} style={[s.input,wide&&{minHeight:control.desktopButton},focused&&s.focused,props.style]}/></View>;
+  const [passwordVisible,setPasswordVisible]=useState(false);
+  return <View style={s.field}>
+    <Text style={s.label}>{label}</Text>
+    <View style={secureTextEntry&&s.passwordRow}>
+      <TextInput accessibilityLabel={label} placeholderTextColor={colors.textSubtle} {...props}
+        secureTextEntry={secureTextEntry&&!passwordVisible}
+        onFocus={event=>{setFocused(true);props.onFocus?.(event);}}
+        onBlur={event=>{setFocused(false);props.onBlur?.(event);}}
+        style={[s.input,secureTextEntry&&s.passwordInput,focused&&s.focused,props.style]}/>
+      {secureTextEntry&&<Pressable accessibilityRole="button"
+        accessibilityLabel={passwordVisible?`Ocultar ${label.toLowerCase()}`:`Mostrar ${label.toLowerCase()}`}
+        onPress={()=>setPasswordVisible(visible=>!visible)} style={({pressed})=>[s.passwordToggle,pressed&&{opacity:0.6}]}>
+        <Text style={s.passwordToggleText}>{passwordVisible?'Ocultar':'Mostrar'}</Text>
+      </Pressable>}
+    </View>
+  </View>;
 }
 export function Notice({text,error=false}:{text?:string;error?:boolean}) { return text?<Text accessibilityRole="alert" style={[s.notice,error&&{color:colors.danger,borderLeftColor:colors.danger}]}>{text}</Text>:null; }
 export function EmptyState({text}:{text:string}) {return <Text style={s.empty}>{text}</Text>;}
@@ -36,11 +56,26 @@ export function Badge({text,tone='neutral'}:{text:string;tone?:'neutral'|'succes
 }
 export function Busy() { return <ActivityIndicator accessibilityLabel="Carregando" color={colors.navy} size="small" style={{padding:space.lg}}/>; }
 export function Days({value,onChange,single=false,available=DAYS,disabled=false}:{value:Day[];onChange:(days:Day[])=>void;single?:boolean;available?:readonly Day[];disabled?:boolean}) {
-  return <View style={s.days}>{DAYS.filter(day=>available.includes(day)).map(day=><Pressable key={day} accessibilityRole="checkbox" accessibilityLabel={dayLabels[day]} accessibilityState={{checked:value.includes(day),disabled}} disabled={disabled} hitSlop={{top:4,bottom:4}} onPress={()=>onChange(single?(value.includes(day)?[]:[day]):value.includes(day)?value.filter(d=>d!==day):[...value,day])} style={({pressed})=>[s.day,value.includes(day)&&{backgroundColor:colors.navy,borderColor:colors.navy},(disabled||pressed)&&{opacity:0.6}]}><Text style={[s.dayLabel,{color:value.includes(day)?colors.white:colors.text}]}>{dayLabels[day]}</Text></Pressable>)}</View>;
+  function toggle(day:Day) {
+    if (value.includes(day)) onChange(value.filter(selected=>selected!==day));
+    else onChange(single?[day]:[...value,day]);
+  }
+  return <View style={s.days}>{DAYS.filter(day=>available.includes(day)).map(day=>{
+    const checked=value.includes(day);
+    return <Pressable key={day} accessibilityRole="checkbox" accessibilityLabel={dayLabels[day]}
+      aria-checked={checked} disabled={disabled} hitSlop={{top:4,bottom:4}} onPress={()=>toggle(day)}
+      style={({pressed})=>[s.day,checked&&s.selectedDay,(disabled||pressed)&&{opacity:0.6}]}>
+      <Text style={[s.dayLabel,{color:checked?colors.white:colors.text}]}>{dayLabels[day]}</Text>
+    </Pressable>;
+  })}</View>;
 }
 export const s=StyleSheet.create({
   safe:{flex:1,backgroundColor:colors.background},
   content:{padding:space.page,gap:space.lg,maxWidth:tokens.layout.content,width:'100%',alignSelf:'center',paddingBottom:space.xxl},
+  wideContent:{paddingHorizontal:space.section},
+  cardGrid:{gap:space.lg},
+  wideGrid:{flexDirection:'row',flexWrap:'wrap',alignItems:'flex-start'},
+  gridColumn:{width:'48%'},
   pageHeader:{gap:space.sm,marginBottom:space.sm,maxWidth:tokens.layout.form},
   eyebrow:{fontSize:type.caption,letterSpacing:0.7,fontWeight:'600',color:colors.textMuted},
   title:{fontSize:type.title,lineHeight:34,fontWeight:'700',color:colors.navy},
@@ -58,13 +93,18 @@ export const s=StyleSheet.create({
   dangerButton:{borderColor:colors.danger,backgroundColor:'transparent'},
   buttonText:{fontSize:type.body,fontWeight:'600',flexShrink:1},
   input:{backgroundColor:colors.surface,borderColor:colors.controlBorder,borderWidth:1,borderRadius:radius.control,paddingHorizontal:space.md,paddingVertical:space.sm,fontSize:15,color:colors.text,minHeight:control.input},
+  passwordRow:{flexDirection:'row',alignItems:'center',gap:space.sm},
+  passwordInput:{flex:1,minWidth:0},
+  passwordToggle:{minHeight:control.input,justifyContent:'center',paddingHorizontal:space.sm},
+  passwordToggleText:{color:colors.navy,fontSize:type.label,fontWeight:'600'},
   focused:{borderColor:colors.focus,outlineColor:colors.focus,outlineStyle:'solid',outlineWidth:2,outlineOffset:2},
   notice:{paddingLeft:space.md,paddingVertical:space.sm,borderLeftWidth:2,borderLeftColor:colors.controlBorder,color:colors.textMuted,fontSize:type.helper,lineHeight:19},
   empty:{color:colors.textMuted,fontSize:type.body,lineHeight:21,paddingVertical:space.lg,borderTopWidth:1,borderColor:colors.border},
   row:{flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:space.sm},
   toolbar:{flexDirection:'row',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:space.sm},
   days:{flexDirection:'row',flexWrap:'wrap',gap:space.xs},
-  day:{paddingHorizontal:space.sm,minWidth:36,minHeight:control.day,justifyContent:'center',alignItems:'center',borderRadius:radius.control,borderWidth:1,borderColor:colors.controlBorder,backgroundColor:colors.surface},
+  day:{paddingHorizontal:space.sm,minWidth:40,minHeight:control.button,justifyContent:'center',alignItems:'center',borderRadius:radius.control,borderWidth:1,borderColor:colors.controlBorder,backgroundColor:colors.surface},
+  selectedDay:{backgroundColor:colors.navy,borderColor:colors.navy},
   dayLabel:{fontSize:type.helper,fontWeight:'600'},
   badge:{alignSelf:'flex-start',color:colors.textMuted,backgroundColor:colors.selected,paddingHorizontal:6,paddingVertical:2,borderRadius:radius.badge,fontSize:type.caption,fontWeight:'600'},
   link:{color:colors.navy,fontSize:type.body,fontWeight:'600',paddingVertical:space.md,alignSelf:'flex-start',textDecorationLine:'underline'},

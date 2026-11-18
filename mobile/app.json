@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Carona Solidária", "slug": "carona-solidaria", "version": "1.0.0", "orientation": "portrait",
+    "name": "Carona Solidária", "slug": "carona-solidaria", "version": "1.0.0", "orientation": "default",
     "scheme": "caronasolidaria", "userInterfaceStyle": "light",
-    "ios": { "bundleIdentifier": "br.com.caronasolidaria.app" },
+    "ios": { "bundleIdentifier": "br.com.caronasolidaria.app", "supportsTablet": true },
     "android": { "package": "br.com.caronasolidaria.app" },
     "web": { "output": "single" },
     "plugins": ["expo-router", "expo-secure-store", ["expo-location", {"locationWhenInUsePermission": "Permitir que Carona Solidária encontre caronas próximas ao seu ponto de saída?", "isIosBackgroundLocationEnabled": false, "isAndroidBackgroundLocationEnabled": false}], ["expo-splash-screen", {"backgroundColor": "#01296F"}]],

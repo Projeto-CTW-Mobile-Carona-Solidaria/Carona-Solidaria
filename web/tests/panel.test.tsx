@@ -47,6 +47,21 @@ beforeEach(()=>{
 });
 afterEach(()=>{cleanup();configureSession(null);vi.unstubAllGlobals();});
 
+test('shows and hides the entered password without submitting the form',async()=>{
+  const user=userEvent.setup();
+  render(<AuthProvider><Login/></AuthProvider>);
+  const password=screen.getByLabelText('Senha') as HTMLInputElement;
+  await user.type(password,'test-password-123');
+  expect(password.type).toBe('password');
+  await user.click(screen.getByRole('button',{name:'Mostrar senha'}));
+  expect(password.type).toBe('text');
+  expect(password.value).toBe('test-password-123');
+  await user.click(screen.getByRole('button',{name:'Ocultar senha'}));
+  expect(password.type).toBe('password');
+  expect(password.value).toBe('test-password-123');
+  expect(calls).toHaveLength(0);
+});
+
 test('RH enters the web panel, cannot manage the RH team and logout revokes the token',async()=>{
   role='RH';const user=await enter();await screen.findByText('Honda Civic');
   expect(screen.queryByRole('button',{name:/Equipe de RH/})).toBeNull();expect(currentToken()).toBe('test-token');
